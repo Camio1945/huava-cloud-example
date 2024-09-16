@@ -1,0 +1,45 @@
+server:
+  port: 8880
+  address: 192.168.0.100
+
+spring:
+#  profiles:
+#    active: dev
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      forwarded:
+        enabled: true
+    nacos:
+      discovery:
+        server-addr: 192.168.0.102:8848
+        username: 'nacos'
+        password: 'nacos'
+        namespace: '5e63d532-6a67-403f-b4b4-6e37a3ab57b1'
+        ip: 192.168.0.100
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        username: ${spring.cloud.nacos.discovery.username}
+        password: ${spring.cloud.nacos.discovery.password}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        # 以下这一段配置是在 native 打包时用到的，不要删除
+        import-check:
+          enabled: false
+  config:
+    import:
+      - nacos:common.properties?refreshEnabled=true
+      - nacos:${spring.application.name}.properties?refreshEnabled=true
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    com: info
+    io: info
+    org: info

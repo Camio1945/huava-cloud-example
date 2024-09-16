@@ -1,0 +1,20 @@
+{
+  "types": [
+  ],
+  "proxies": [
+  ],
+  "lambdaCapturingTypes": [
+    {
+      "name": "cn.huava.gateway.common.graalvm.NativeRuntimeHintsRegistrar"
+    },
+    {
+      "name": "cn.huava.gateway.common.graalvm.SerializationConfigGenerator"
+    },
+    {
+      "name": "com.alibaba.nacos.client.config.NacosConfigService"
+    },
+    {
+      "name": "com.alibaba.nacos.common.remote.client.RpcClient"
+    }
+  ]
+}
