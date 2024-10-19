@@ -1,0 +1,82 @@
+server:
+  port: 22346
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: goods-service
+  # 以下这一段配置是在 native 打包时用到的，不要删除（备用，因为 native 打包的方案失败了）
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+    function:
+      definition: replenishStockConsumer;
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+        bindings:
+          replenishStockConsumer-in-0:
+            consumer:
+              # tag: {@code tag1||tag2||tag3 }; sql: {@code 'color'='blue' AND 'price'>100 } .
+              #              subscription: 'TagA || TagC || TagD'
+              push:
+                orderly: true
+      bindings:
+        replenishStockConsumer-in-0:
+          destination: replenishStockTopic
+          group: replenishStockConsumerGroup
+  elasticsearch:
+    #    uris: http://localhost:9200
+    uris: http://127.0.0.1:9200
+    username: elastic
+    password: E26Ji5NhDr9ivJwD=kif
+    connection-timeout: 10s
+    socket-timeout: 10s
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          elasticsearch: trace
+      elasticsearch: trace
+    co:
+      elastic: trace
+
+seata:
+  config:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      group: 'SEATA_GROUP'
+      namespace: '5e63d532-6a67-403f-b4b4-6e37a3ab57b1'
+      dataId: 'seataServer.properties'
+      username: 'nacos'
+      password: 'nacos'
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:31227/xxl-job-admin
+    accessToken: default_token
+    executor:
+      # 这里的应用名称要跟 xxl-job-admin 任务调度中心 -> 执行器管理 -> 执行器的 AppName 保持一致
+      appname: ${spring.application.name}
+      address: ""
+      ip: ""
+      # 0 表示自动获取端口
+      port: 0
+      logpath: "F:/temp/logs/xxl-job"
+      logretentiondays: 30

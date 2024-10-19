@@ -1,21 +1,44 @@
 package cn.huava.gateway;
 
-import cn.huava.gateway.common.graalvm.NativeRuntimeHintsRegistrar;
-import cn.huava.gateway.common.graalvm.SerializationConfigGenerator;
+import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactivefeign.spring.config.EnableReactiveFeignClients;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Camio1945
  */
+@Slf4j
+@EnableReactiveFeignClients
 @SpringBootApplication
-@ImportRuntimeHints(NativeRuntimeHintsRegistrar.class)
 public class GatewayApplication {
 
   public static void main(String[] args) {
-    // 为了避免不必要的麻烦，以下这行代码请不要删除，具体功能见方法本身的注释
-    SerializationConfigGenerator.generateSerializationConfigFile();
     SpringApplication.run(GatewayApplication.class, args);
+    setBlockHandler();
+  }
+
+  private static void setBlockHandler() {
+    GatewayCallbackManager.setBlockHandler(
+        (serverWebExchange, e) -> {
+          String msg = "访问量过大，稍后请重试";
+          log.info("{} : {}", msg, e.getClass().getSimpleName());
+          Map<String, Object> map = HashMap.newHashMap(3);
+          map.put("uri", serverWebExchange.getRequest().getURI());
+          map.put("msg", msg);
+          map.put("code", HttpStatus.TOO_MANY_REQUESTS.value());
+          map.put("requestId", serverWebExchange.getRequest().getId());
+          return ServerResponse.status(HttpStatus.TOO_MANY_REQUESTS)
+              .contentType(MediaType.APPLICATION_JSON)
+              .body(Mono.just(map), Map.class);
+        });
   }
 }

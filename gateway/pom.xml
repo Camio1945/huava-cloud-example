@@ -29,37 +29,90 @@
   <properties>
     <java.version>21</java.version>
     <spring-cloud.version>2023.0.3</spring-cloud.version>
-    <nacos.version>2023.0.1.2</nacos.version>
+    <alibaba.cloud.version>2023.0.1.2</alibaba.cloud.version>
   </properties>
   <dependencies>
+    <!-- huava cloud 公共依赖 -->
+    <dependency>
+      <groupId>cn.huava.cloud</groupId>
+      <artifactId>common-provider</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <!-- 网关 -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-gateway</artifactId>
     </dependency>
 
+    <!-- 负载均衡：没有它，就无法支持 nacos 路由配置中的 lb:// -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-loadbalancer</artifactId>
     </dependency>
 
+    <!-- 微服务的注册发现 -->
     <dependency>
       <groupId>com.alibaba.cloud</groupId>
       <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-      <version>${nacos.version}</version>
+      <version>${alibaba.cloud.version}</version>
     </dependency>
 
+    <!-- 微服务的动态配置 -->
     <dependency>
       <groupId>com.alibaba.cloud</groupId>
       <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-      <version>${nacos.version}</version>
+      <version>${alibaba.cloud.version}</version>
     </dependency>
 
-    <!-- Lombok 开发工具，https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <!-- Sentinel 熔断限流 -->
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.34</version>
-      <scope>provided</scope>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+      <version>${alibaba.cloud.version}</version>
+    </dependency>
+
+    <!-- Sentinel 熔断限流（针对 Spring Cloud Gateway） -->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
+      <version>${alibaba.cloud.version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.alibaba.cloud/spring-cloud-alibaba-sentinel-datasource -->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-alibaba-sentinel-datasource</artifactId>
+      <version>${alibaba.cloud.version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.alibaba.csp/sentinel-spring-cloud-gateway-adapter -->
+    <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-spring-cloud-gateway-adapter</artifactId>
+      <version>1.8.8</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.alibaba.csp/sentinel-datasource-nacos -->
+    <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-datasource-nacos</artifactId>
+      <version>1.8.8</version>
+    </dependency>
+
+    <!-- openfeign 社区 reactive 版本，调用微服务接口，参考：https://juejin.cn/post/7337513012394541095 -->
+    <!-- https://mvnrepository.com/artifact/com.playtika.reactivefeign/feign-reactor-spring-cloud-starter -->
+    <dependency>
+      <groupId>com.playtika.reactivefeign</groupId>
+      <artifactId>feign-reactor-spring-cloud-starter</artifactId>
+      <version>4.2.1</version>
+      <type>pom</type>
+    </dependency>
+
+    <!-- Connect to Redis，https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
+    <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson-spring-boot-starter</artifactId>
+      <version>3.35.0</version>
     </dependency>
 
     <!-- Hutool 工具集，https://mvnrepository.com/artifact/org.dromara.hutool/hutool-all -->
@@ -69,6 +122,13 @@
       <version>6.0.0-M16</version>
     </dependency>
 
+    <!-- Lombok 开发工具，https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.34</version>
+      <scope>provided</scope>
+    </dependency>
     <!--
     graal official SDK , it's necessary, don't remove it, otherwise when executing "mvnw -Pnative clean native:compile" will get this error: package org.graalvm.nativeimage.hosted does not exist
     -->
@@ -110,11 +170,11 @@
             <!-- Support http and https protocols -->
             <buildArg>--enable-url-protocols=http,https</buildArg>
             <buildArg>--no-fallback</buildArg>
-<!--            <buildArg>&#45;&#45;initialize-at-build-time=org.redisson.misc.BiHashMap</buildArg>-->
+            <!--            <buildArg>&#45;&#45;initialize-at-build-time=org.redisson.misc.BiHashMap</buildArg>-->
             <!-- used to solve the problem of garbled Chinese characters in the database -->
             <buildArg>-H:+AddAllCharsets</buildArg>
             <buildArg>-H:+ReportExceptionStackTraces</buildArg>
-            <!--             <buildArg>-H:ConfigurationFileDirectories=/home/camio/.huava/native-image-config</buildArg>-->
+            <!--            <buildArg>-H:ConfigurationFileDirectories=/home/camio/.gateway/native-image-config</buildArg>-->
             <buildArg>--report-unsupported-elements-at-runtime</buildArg>
           </buildArgs>
         </configuration>
