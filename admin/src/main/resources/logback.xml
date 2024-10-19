@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration scan="false">
+  <springProperty name="appName" source="spring.application.name"/>
+
+  <!-- [%X{tid}] 来自于：https://skywalking.apache.org/docs/skywalking-java/next/en/setup/service-agent/java-agent/application-toolkit-logback-1.x/ -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${appName}] [%X{rid}] [%X{tid}] [%thread] %-5level %logger{36} -%msg%n</Pattern>
+    </encoder>
+  </appender>
+
+  <!-- 滚动日志，输出到文件，按天滚动 -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>F:/temp/logs/huava_admin-%d{yyyyMMdd-HHmm}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>F:/temp/logs/huava_admin-%d{yyyyMMdd-HHmm}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [${appName}] [%X{rid}] [%X{tid}] [%thread] %-5level %logger{36} -%msg%n</Pattern>
+    </encoder>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="FILE"/>
+  </root>
+
+</configuration>

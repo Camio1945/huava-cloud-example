@@ -1,0 +1,71 @@
+server:
+  port: 22348
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: order-service
+  # 以下这一段配置是在 native 打包时用到的，不要删除（备用，因为 native 打包的方案失败了）
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+        bindings:
+          replenishStockProducer-out-0:
+            producer:
+              messageQueueSelector: orderlyMessageQueueSelector
+          updateMemberPointProducer-out-0:
+            producer:
+              messageQueueSelector: orderlyMessageQueueSelector
+          replenishBalanceProducer-out-0:
+            producer:
+              messageQueueSelector: orderlyMessageQueueSelector
+          delayCancelOrderProducer-out-0:
+            producer:
+              messageQueueSelector: orderlyMessageQueueSelector
+          delayCancelOrderConsumer-in-0:
+            consumer:
+              push:
+                orderly: true
+      bindings:
+        replenishStockProducer-out-0:
+          destination: replenishStockTopic
+        updateMemberPointProducer-out-0:
+          destination: updateMemberPointTopic
+        replenishBalanceProducer-out-0:
+          destination: replenishBalanceTopic
+        delayCancelOrderProducer-out-0:
+          destination: delayCancelOrderTopic
+        delayCancelOrderConsumer-in-0:
+          destination: delayCancelOrderTopic
+          group: delayCancelOrderConsumerGroup
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    org.springframework: info
+
+seata:
+  config:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      group: 'SEATA_GROUP'
+      namespace: '5e63d532-6a67-403f-b4b4-6e37a3ab57b1'
+      dataId: 'seataServer.properties'
+      username: 'nacos'
+      password: 'nacos'
+
