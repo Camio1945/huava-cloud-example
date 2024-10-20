@@ -5,7 +5,6 @@ import cn.huava.cloud.common.service.BaseService;
 import cn.huava.cloud.feign.GoodsFeignClient;
 import cn.huava.cloud.order.constant.OrderConstant;
 import cn.huava.cloud.order.mapper.OrderMapper;
-import cn.huava.cloud.order.mq.DelayCancelMsg;
 import cn.huava.cloud.order.mq.ReplenishStockMsg;
 import cn.huava.cloud.order.pojo.dto.GoodsDto;
 import cn.huava.cloud.order.pojo.po.*;
@@ -17,7 +16,6 @@ import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.common.message.MessageConst;
 import org.dromara.hutool.core.data.id.IdUtil;
 import org.dromara.hutool.core.date.DateUtil;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -50,7 +48,6 @@ class SubmitOrderService extends BaseService<OrderMapper, OrderPo> {
     orderItems.forEach(orderItem -> orderItem.setOrderId(orderExtPo.getId()));
     orderItemService.saveBatch(orderItems);
     buyGoods(orderItems);
-    sendDelayMqMsgForCanceling(orderExtPo.getId());
     return orderExtPo.getId();
   }
 
@@ -67,21 +64,6 @@ class SubmitOrderService extends BaseService<OrderMapper, OrderPo> {
       totalAmount = totalAmount.add(orderItem.getTotalAmount());
     }
     return totalAmount;
-  }
-
-  private void sendDelayMqMsgForCanceling(@NonNull final Long orderId) {
-    Map<String, Object> headers = HashMap.newHashMap(2);
-    String key = "order-service-delay-canceling-id-" + orderId;
-    headers.put("subjectId", orderId);
-    headers.put(MessageConst.PROPERTY_KEYS, key);
-    headers.put(MessageConst.PROPERTY_ORIGIN_MESSAGE_ID, key);
-    // 若干时间后消费 https://rocketmq.apache.org/docs/4.x/producer/04message3/
-    // 这里为了测试方便，级别设置成了 3 （10秒）
-    headers.put(MessageConst.PROPERTY_DELAY_TIME_LEVEL, 3);
-    DelayCancelMsg delayCancelMsg = new DelayCancelMsg().setOrderId(orderId);
-    Message<DelayCancelMsg> msg = new GenericMessage<>(delayCancelMsg, headers);
-    streamBridge.send("delayCancelOrderProducer-out-0", msg);
-    log.info("延时消息已发送，订单ID：{}", orderId);
   }
 
   /** 购买商品 */
@@ -140,8 +122,6 @@ class SubmitOrderService extends BaseService<OrderMapper, OrderPo> {
     Long goodsId = goodsPo.getId();
     String key = "order-service-replenish-stock-goods-id-" + goodsId;
     headers.put("subjectId", goodsId);
-    headers.put(MessageConst.PROPERTY_KEYS, key);
-    headers.put(MessageConst.PROPERTY_ORIGIN_MESSAGE_ID, key);
     ReplenishStockMsg replenishStockMsg = new ReplenishStockMsg().setGoodsId(goodsId);
     Message<ReplenishStockMsg> msg = new GenericMessage<>(replenishStockMsg, headers);
     streamBridge.send("replenishStockProducer-out-0", msg);

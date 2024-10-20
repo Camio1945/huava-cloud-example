@@ -26,8 +26,6 @@ public class MqConfig {
    * 与 *.yml（可能是 nacos 中的 *.yml ） 文件中的以下配置对应：
    *
    * <pre>
-   * spring.cloud.function.definition
-   * spring.cloud.stream.rocketmq.bindings.updateMemberPointConsumer-in-0
    * spring.cloud.stream.bindings.updateMemberPointConsumer-in-0
    * </pre>
    *

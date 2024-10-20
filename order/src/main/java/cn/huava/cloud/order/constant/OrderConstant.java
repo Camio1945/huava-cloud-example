@@ -9,7 +9,7 @@ package cn.huava.cloud.order.constant;
 public interface OrderConstant {
 
   /** 取消未支付的订单前等待多少分钟 */
-  int MINUTES_BEFORE_CANCEL_UNPAID_ORDER = 10;
+  int MINUTES_BEFORE_CANCEL_UNPAID_ORDER = 1;
 
   /** 订单状态 */
   interface OrderStatus {

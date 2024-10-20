@@ -43,6 +43,16 @@ order：订单微服务
 
 ---
 
+# 分支说明
+
+`master` 分支：默认分支，基于 Spring Cloud，消息队列用的 Rocket MQ。
+
+`kafka` 分支：把 Rocket MQ 替换为 Kafka。因为总是有面试会问到 Kafka，所以就单独开一个分支体验一把。
+
+
+
+---
+
 # Huava Cloud 启动顺序
 
 1. 启动 MySQL，略
@@ -102,6 +112,14 @@ java -jar rocketmq-dashboard-2.0.1-SNAPSHOT.jar --server.port=8154
 Rocket MQ 浏览器控制台：
 http://localhost:8154/
 注：默认端口是 8080
+
+---
+
+5. 启动 Kafka
+```powershell
+cd F:\temp\kafka3.8.0
+.\bin\windows\kafka-server-start.bat config\kraft\server.properties
+```
 
 ---
 

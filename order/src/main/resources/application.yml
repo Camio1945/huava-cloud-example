@@ -13,26 +13,21 @@ spring:
         import-check:
           enabled: false
     stream:
-      rocketmq:
-        binder:
-          name-server: localhost:9876
+      kafka:
         bindings:
-          replenishStockProducer-out-0:
+          output:
             producer:
-              messageQueueSelector: orderlyMessageQueueSelector
-          updateMemberPointProducer-out-0:
-            producer:
-              messageQueueSelector: orderlyMessageQueueSelector
-          replenishBalanceProducer-out-0:
-            producer:
-              messageQueueSelector: orderlyMessageQueueSelector
-          delayCancelOrderProducer-out-0:
-            producer:
-              messageQueueSelector: orderlyMessageQueueSelector
-          delayCancelOrderConsumer-in-0:
-            consumer:
-              push:
-                orderly: true
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.IntegerSerializer
+                value:
+                  serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+                  subject:
+                    name:
+                      strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+                schema:
+                  registry:
+                    url: http://localhost:9092
       bindings:
         replenishStockProducer-out-0:
           destination: replenishStockTopic
@@ -40,11 +35,6 @@ spring:
           destination: updateMemberPointTopic
         replenishBalanceProducer-out-0:
           destination: replenishBalanceTopic
-        delayCancelOrderProducer-out-0:
-          destination: delayCancelOrderTopic
-        delayCancelOrderConsumer-in-0:
-          destination: delayCancelOrderTopic
-          group: delayCancelOrderConsumerGroup
 
 management:
   endpoint:
@@ -69,3 +59,17 @@ seata:
       username: 'nacos'
       password: 'nacos'
 
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:31227/xxl-job-admin
+    accessToken: default_token
+    executor:
+      # 这里的应用名称要跟 xxl-job-admin 任务调度中心 -> 执行器管理 -> 执行器的 AppName 保持一致
+      appname: ${spring.application.name}
+      address: ""
+      ip: ""
+      # 0 表示自动获取端口
+      port: 0
+      logpath: "F:/temp/logs/xxl-job"
+      logretentiondays: 30

@@ -29,8 +29,7 @@ public class MqConfig {
    * 与 *.yml（可能是 nacos 中的 *.yml ） 文件中的以下配置对应：
    *
    * <pre>
-   * spring.cloud.function.definition
-   * spring.cloud.stream.rocketmq.bindings.replenishStockConsumer-in-0
+   * spring.cloud.function.definition=replenishStockConsumer;replenishBalanceConsumer
    * spring.cloud.stream.bindings.replenishStockConsumer-in-0
    * </pre>
    *

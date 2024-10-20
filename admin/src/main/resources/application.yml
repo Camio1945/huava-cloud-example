@@ -12,32 +12,30 @@ spring:
       config:
         import-check:
           enabled: false
+    # 消息队列用到，与 MqConfig 中的 Bean 名称需保持一致
     function:
       definition: replenishStockConsumer;replenishBalanceConsumer
     stream:
-      rocketmq:
-        binder:
-          name-server: localhost:9876
+      kafka:
         bindings:
-          replenishStockConsumer-in-0:
-            consumer:
-              # tag: {@code tag1||tag2||tag3 }; sql: {@code 'color'='blue' AND 'price'>100 } .
-              #              subscription: 'TagA || TagC || TagD'
-              push:
-                orderly: true
-          replenishBalanceConsumer-in-0:
-            consumer:
-              # tag: {@code tag1||tag2||tag3 }; sql: {@code 'color'='blue' AND 'price'>100 } .
-              #              subscription: 'TagA || TagC || TagD'
-              push:
-                orderly: true
+          output:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.IntegerSerializer
+                value:
+                  serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+                  subject:
+                    name:
+                      strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+                schema:
+                  registry:
+                    url: http://localhost:9092
       bindings:
         replenishStockConsumer-in-0:
           destination: replenishStockTopic
-          group: replenishStockConsumerGroup
         replenishBalanceConsumer-in-0:
           destination: replenishBalanceTopic
-          group: replenishBalanceConsumerGroup
 
 management:
   endpoint:

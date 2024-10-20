@@ -12,23 +12,6 @@ spring:
       config:
         import-check:
           enabled: false
-    function:
-      definition: replenishStockConsumer;
-    stream:
-      rocketmq:
-        binder:
-          name-server: localhost:9876
-        bindings:
-          replenishStockConsumer-in-0:
-            consumer:
-              # tag: {@code tag1||tag2||tag3 }; sql: {@code 'color'='blue' AND 'price'>100 } .
-              #              subscription: 'TagA || TagC || TagD'
-              push:
-                orderly: true
-      bindings:
-        replenishStockConsumer-in-0:
-          destination: replenishStockTopic
-          group: replenishStockConsumerGroup
   elasticsearch:
     #    uris: http://localhost:9200
     uris: http://127.0.0.1:9200

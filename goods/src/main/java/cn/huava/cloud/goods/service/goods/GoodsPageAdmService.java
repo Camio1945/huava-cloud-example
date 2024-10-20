@@ -13,7 +13,6 @@ import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,7 +35,7 @@ class GoodsPageAdmService extends BaseService<GoodsMapper, GoodsPo> {
   }
 
   private static void setSelectionByCondition(
-      @NotNull GoodsPo params, LambdaQueryWrapper<GoodsPo> wrapper) {
+      @NonNull GoodsPo params, LambdaQueryWrapper<GoodsPo> wrapper) {
     wrapper
         .like(Fn.isNotBlank(params.getName()), GoodsPo::getName, params.getName())
         .eq(params.getIsOn() != null, GoodsPo::getIsOn, params.getIsOn())
@@ -55,7 +54,7 @@ class GoodsPageAdmService extends BaseService<GoodsMapper, GoodsPo> {
 
   /** 设置排序字段 */
   private static void setOrderByFields(
-      @NotNull PageQo<GoodsPo> pageQo, LambdaQueryWrapper<GoodsPo> wrapper) {
+      @NonNull PageQo<GoodsPo> pageQo, LambdaQueryWrapper<GoodsPo> wrapper) {
     Map<String, SFunction<GoodsPo, ?>> fieldToFunctionMap = HashMap.newHashMap(5);
     fieldToFunctionMap.put("id", GoodsPo::getId);
     fieldToFunctionMap.put("price", GoodsPo::getPrice);

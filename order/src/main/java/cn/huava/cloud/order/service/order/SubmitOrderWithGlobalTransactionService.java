@@ -17,7 +17,6 @@ import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.common.message.MessageConst;
 import org.dromara.hutool.core.data.id.IdUtil;
 import org.dromara.hutool.core.date.DateUtil;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -124,8 +123,6 @@ class SubmitOrderWithGlobalTransactionService extends BaseService<OrderMapper, O
     Long goodsId = goodsPo.getId();
     String key = "order-service-replenish-stock-goods-id-" + goodsId;
     headers.put("subjectId", goodsId);
-    headers.put(MessageConst.PROPERTY_KEYS, key);
-    headers.put(MessageConst.PROPERTY_ORIGIN_MESSAGE_ID, key);
     ReplenishStockMsg replenishStockMsg = new ReplenishStockMsg().setGoodsId(goodsId);
     Message<ReplenishStockMsg> msg = new GenericMessage<>(replenishStockMsg, headers);
     streamBridge.send("replenishStockProducer-out-0", msg);

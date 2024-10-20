@@ -16,7 +16,6 @@ import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.common.message.MessageConst;
 import org.dromara.hutool.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -63,8 +62,6 @@ class PayByBalanceService extends BaseService<OrderMapper, OrderPo> {
     Map<String, Object> headers = HashMap.newHashMap(2);
     String key = "order-service-increase-point-order-id-" + orderPo.getId();
     headers.put("subjectId", orderPo.getMemberId());
-    headers.put(MessageConst.PROPERTY_KEYS, key);
-    headers.put(MessageConst.PROPERTY_ORIGIN_MESSAGE_ID, key);
     UpdateMemberPointMsg updateMemberPointMsg = getUpdateMemberPointMsg(orderPo);
     Message<UpdateMemberPointMsg> msg = new GenericMessage<>(updateMemberPointMsg, headers);
     streamBridge.send("updateMemberPointProducer-out-0", msg);
@@ -103,8 +100,6 @@ class PayByBalanceService extends BaseService<OrderMapper, OrderPo> {
               orderPo.getMemberId(),
               orderPo.getId());
       headers.put("subjectId", orderPo.getMemberId());
-      headers.put(MessageConst.PROPERTY_KEYS, key);
-      headers.put(MessageConst.PROPERTY_ORIGIN_MESSAGE_ID, key);
       ReplenishBalanceMsg updateMemberPointMsg = new ReplenishBalanceMsg();
       updateMemberPointMsg.setMemberId(orderPo.getMemberId());
       Message<ReplenishBalanceMsg> msg = new GenericMessage<>(updateMemberPointMsg, headers);

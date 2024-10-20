@@ -8,8 +8,6 @@ import cn.huava.cloud.common.service.BaseService;
 import cn.huava.cloud.order.mapper.OrderMapper;
 import cn.huava.cloud.order.pojo.po.OrderPo;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import java.util.*;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.hutool.core.date.DateTime;
@@ -24,21 +22,16 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class CancelOrderService extends BaseService<OrderMapper, OrderPo> {
+class CancelExpiredOrderService extends BaseService<OrderMapper, OrderPo> {
 
-  protected void cancel(@NonNull Long orderId) {
-    OrderPo orderPo = getById(orderId);
-    if (orderPo.getStatus() != UNPAID) {
-      return;
-    }
-    DateTime deadline =
-        DateUtil.offsetMinute(orderPo.getCreateTime(), MINUTES_BEFORE_CANCEL_UNPAID_ORDER);
-    if (orderPo.getCreateTime().before(deadline)) {
-      return;
-    }
-    orderPo.setStatus(CANCELED);
+  protected void cancelExpiredOrder() {
     LambdaUpdateWrapper<OrderPo> wrapper = new LambdaUpdateWrapper<>();
-    wrapper.set(OrderPo::getStatus, orderPo.getStatus()).eq(OrderPo::getId, orderId);
+    DateTime minutesAgo =
+        DateUtil.offsetMinute(DateUtil.now(), -MINUTES_BEFORE_CANCEL_UNPAID_ORDER);
+    wrapper
+        .set(OrderPo::getStatus, CANCELED)
+        .eq(OrderPo::getStatus, UNPAID)
+        .le(OrderPo::getCreateTime, minutesAgo);
     update(wrapper);
   }
 }

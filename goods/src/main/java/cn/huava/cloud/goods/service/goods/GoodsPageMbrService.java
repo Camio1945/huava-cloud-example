@@ -19,7 +19,6 @@ import java.util.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.*;
 import org.springframework.data.elasticsearch.client.elc.*;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -48,7 +47,7 @@ class GoodsPageMbrService extends BaseService<GoodsMapper, GoodsPo> {
         .toList();
   }
 
-  private static Query getQuery(@NotNull SearchGoodsQo params) {
+  private static Query getQuery(@NonNull SearchGoodsQo params) {
     Function<BoolQuery.Builder, ObjectBuilder<BoolQuery>> function =
         builder -> {
           List<Query> queries = new ArrayList<>();
@@ -59,7 +58,7 @@ class GoodsPageMbrService extends BaseService<GoodsMapper, GoodsPo> {
     return QueryBuilders.bool(function);
   }
 
-  private static void addQueryByPrice(@NotNull SearchGoodsQo params, List<Query> queries) {
+  private static void addQueryByPrice(@NonNull SearchGoodsQo params, List<Query> queries) {
     if (params.getStartPrice() == null && params.getEndPrice() == null) {
       return;
     }
@@ -77,14 +76,14 @@ class GoodsPageMbrService extends BaseService<GoodsMapper, GoodsPo> {
             }));
   }
 
-  private static void addQueryByName(@NotNull SearchGoodsQo params, List<Query> queries) {
+  private static void addQueryByName(@NonNull SearchGoodsQo params, List<Query> queries) {
     if (Fn.isNotBlank(params.getName())) {
       queries.add(match(build -> build.field("name").query(params.getName())));
     }
   }
 
-  @NotNull
-  private static Sort getSort(@NotNull PageQo<GoodsPo> pageQo) {
+  @NonNull
+  private static Sort getSort(@NonNull PageQo<GoodsPo> pageQo) {
     String orderBy = pageQo.getOrderBy();
     List<Sort.Order> orderList = new ArrayList<>();
     if (orderBy != null && !orderBy.isEmpty()) {

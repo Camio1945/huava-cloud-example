@@ -15,20 +15,24 @@ spring:
     function:
       definition: updateMemberPointConsumer;
     stream:
-      rocketmq:
-        binder:
-          name-server: localhost:9876
+      kafka:
         bindings:
-          updateMemberPointConsumer-in-0:
-            consumer:
-              # tag: {@code tag1||tag2||tag3 }; sql: {@code 'color'='blue' AND 'price'>100 } .
-              #              subscription: 'TagA || TagC || TagD'
-              push:
-                orderly: true
+          output:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.IntegerSerializer
+                value:
+                  serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+                  subject:
+                    name:
+                      strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+                schema:
+                  registry:
+                    url: http://localhost:9092
       bindings:
         updateMemberPointConsumer-in-0:
           destination: updateMemberPointTopic
-          group: updateMemberPointConsumerGroup
 
 management:
   endpoint:

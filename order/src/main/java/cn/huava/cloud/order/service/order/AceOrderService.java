@@ -24,7 +24,7 @@ public class AceOrderService extends BaseService<OrderMapper, OrderPo> {
   private final SubmitOrderService submitOrderService;
   private final SubmitOrderWithGlobalTransactionService submitOrderWithGlobalTransactionService;
   private final PayByBalanceService payByBalanceService;
-  private final CancelOrderService cancelOrderService;
+  private final CancelExpiredOrderService cancelExpiredOrderService;
 
   @Transactional(rollbackFor = Exception.class)
   public Long submitOrder(@NonNull final OrderExtPo orderExtPo) {
@@ -41,12 +41,8 @@ public class AceOrderService extends BaseService<OrderMapper, OrderPo> {
     payByBalanceService.payByBalance(orderId);
   }
 
-  /**
-   * 如果超时未支付，则取消订单
-   *
-   * @param orderId
-   */
-  public void cancelIfExceedPayTime(@NonNull final Long orderId) {
-    cancelOrderService.cancel(orderId);
+  /** 如果超时未支付，则取消订单 */
+  public void cancelExpiredOrder() {
+    cancelExpiredOrderService.cancelExpiredOrder();
   }
 }
