@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PayByBalanceService extends BaseService<OrderMapper, OrderPo> {
+class PayByBalanceService extends BaseService<OrderMapper, OrderPo> {
   private final MemberFeignClient memberFeignClient;
   private final StreamBridge streamBridge;
 

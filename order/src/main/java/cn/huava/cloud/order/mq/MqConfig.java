@@ -1,6 +1,8 @@
 package cn.huava.cloud.order.mq;
 
 import java.util.function.Consumer;
+
+import cn.huava.cloud.order.service.order.AceOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,8 @@ import org.springframework.messaging.Message;
 @Configuration
 @RequiredArgsConstructor
 public class MqConfig {
+
+  private final AceOrderService orderService;
 
   /**
    * 与 *.yml（可能是 nacos 中的 *.yml ） 文件中的以下配置对应：
@@ -33,8 +37,7 @@ public class MqConfig {
     return msg -> {
       Long orderId = msg.getPayload().getOrderId();
       log.info("收到取消订单的延时消息，订单ID：{}", orderId);
-
-      System.out.println("来了来了：" + orderId);
+      orderService.cancelIfExceedPayTime(orderId);
     };
   }
 }

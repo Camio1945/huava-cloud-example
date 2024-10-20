@@ -1,5 +1,6 @@
 package cn.huava.cloud.order.service.order;
 
+
 import cn.huava.cloud.common.service.BaseService;
 import cn.huava.cloud.order.mapper.OrderMapper;
 import cn.huava.cloud.order.pojo.po.OrderExtPo;
@@ -23,6 +24,7 @@ public class AceOrderService extends BaseService<OrderMapper, OrderPo> {
   private final SubmitOrderService submitOrderService;
   private final SubmitOrderWithGlobalTransactionService submitOrderWithGlobalTransactionService;
   private final PayByBalanceService payByBalanceService;
+  private final CancelOrderService cancelOrderService;
 
   @Transactional(rollbackFor = Exception.class)
   public Long submitOrder(@NonNull final OrderExtPo orderExtPo) {
@@ -35,7 +37,16 @@ public class AceOrderService extends BaseService<OrderMapper, OrderPo> {
     return submitOrderWithGlobalTransactionService.submitOrder(orderExtPo);
   }
 
-  public void payByBalance(@NonNull Long orderId) {
+  public void payByBalance(@NonNull final Long orderId) {
     payByBalanceService.payByBalance(orderId);
+  }
+
+  /**
+   * 如果超时未支付，则取消订单
+   *
+   * @param orderId
+   */
+  public void cancelIfExceedPayTime(@NonNull final Long orderId) {
+    cancelOrderService.cancel(orderId);
   }
 }

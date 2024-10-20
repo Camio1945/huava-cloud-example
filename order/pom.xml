@@ -100,6 +100,13 @@
       <version>${alibaba.cloud.version}</version>
     </dependency>
 
+    <!-- rocketmq-client-java -->
+    <dependency>
+      <groupId>org.apache.rocketmq</groupId>
+      <artifactId>rocketmq-client-java</artifactId>
+      <version>5.0.7</version>
+    </dependency>
+
     <!-- Seata 分布式事务管理 -->
     <dependency>
       <groupId>com.alibaba.cloud</groupId>
